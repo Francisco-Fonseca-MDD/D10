@@ -3,8 +3,10 @@ import streamlit as st
 
 n = int(st.number_input('Number of dice to roll: ', format = '%i',value = 0))
 AutoSucc = int(st.number_input('Number of auto successes: ', format = '%i',value = 0))
-TargetNumber = int(st.number_input('Target Number for success: ', format = '%i',value = 7))
-DoubleThresh = int(st.number_input('Double all above and including: ', format = '%i',value = 10))
+TargetNumber = st.slider('Select the target number for the roll', min_value=1, max_value=10,value=7)
+DoubleThresh = st.slider('Double ALL above and including', min_value=1, max_value=10,value=10)
+NoDoubleCheck = st.checkbox('No doubles')
+
 
 
 Roll = np.random.randint(1,11,n)
@@ -18,7 +20,10 @@ NoSucCounter=0
 DoubleCounter=0
 for i in sorted(Roll):
     if i>=DoubleThresh:
-        Successes = Successes+2
+        if NoDoubleCheck:
+            Successes = Successes+1
+        else:
+            Successes = Successes+2
         #st.write(i,': Double Success')
     elif i >= TargetNumber:
         Successes = Successes+1
@@ -34,6 +39,12 @@ Suc   = f"<p style=\"color:#009900;\"> {StringRoll[NoSucCounter*3+1:(DoubleCount
 DoubleSuc   = f"<p style=\"color:#3366ff;\"> {StringRoll[(DoubleCounter+NoSucCounter)*3+1:]} </p>"
 
 RollDisp = NoSuc + Suc + DoubleSuc
+
+if NoDoubleCheck:
+    Suc   = f"<p style=\"color:#009900;\"> {StringRoll[NoSucCounter*3+1:]} </p>"
+    RollDisp = NoSuc + Suc
+
+
 st.write(RollDisp,unsafe_allow_html=True)
 
 #st.write('length: ',len(StringRoll))
